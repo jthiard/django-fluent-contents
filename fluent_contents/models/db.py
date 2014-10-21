@@ -1,4 +1,5 @@
 from future.utils import with_metaclass, python_2_unicode_compatible, PY3
+from django.apps import apps
 from django.contrib.contenttypes.generic import GenericForeignKey
 from django.contrib.contenttypes.models import ContentType
 from django.core.cache import cache
@@ -133,15 +134,19 @@ class ContentItemMetaClass(PolymorphicModelBase):
     # Inspired by from Django-CMS, (c) , BSD licensed.
 
     def __new__(mcs, name, bases, attrs):
+        model_name = name.lower()
+        meta = attrs.get('Meta', type('Meta', (), {}))
+        if hasattr(meta, 'app_label'):
+            app_label = meta.app_label
+        else:
+            module_ = attrs.get('__module__')
+            app_config = apps.get_containing_app_config(module_)
+            app_label = app_config.label
+        if name != 'ContentItem' and not hasattr(meta, 'db_table'):
+                meta.db_table = "contentitem_%s_%s" % (app_label, model_name)
+                attrs['Meta'] = meta
         new_class = super(ContentItemMetaClass, mcs).__new__(mcs, name, bases, attrs)
-        db_table  = new_class._meta.db_table
-        app_label = new_class._meta.app_label
-
         if name != 'ContentItem':
-            if db_table.startswith(app_label + '_'):
-                model_name = db_table[len(app_label)+1:]
-                new_class._meta.db_table = "contentitem_%s_%s" % (app_label, model_name)
-
             # Enforce good manners. The name is often not visible, except for the delete page.
             if not hasattr(new_class, '__str__') or new_class.__str__ == ContentItem.__str__:
                 if PY3:

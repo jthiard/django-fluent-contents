@@ -19,6 +19,7 @@ class Migration(migrations.Migration):
                 ('language', models.CharField(db_index=True, verbose_name='Language', max_length=30, editable=False, choices=[(b'markdown', b'Markdown'), (b'textile', b'Textile'), (b'restructuredtext', b'reStructuredText')])),
             ],
             options={
+                'db_table': 'contentitem_markup_markupitem',
                 'verbose_name': 'Markup code',
                 'verbose_name_plural': 'Markup code',
             },
@@ -29,6 +30,7 @@ class Migration(migrations.Migration):
             fields=[
             ],
             options={
+                'db_table': 'contentitem_markup_markdownmarkupitem',
                 'verbose_name': 'Markdown',
                 'proxy': True,
                 'verbose_name_plural': 'Markdown items',
@@ -40,6 +42,7 @@ class Migration(migrations.Migration):
             fields=[
             ],
             options={
+                'db_table': 'contentitem_markup_restructuredtextmarkupitem',
                 'verbose_name': 'reStructuredText',
                 'proxy': True,
                 'verbose_name_plural': 'reStructuredText items',
@@ -51,6 +54,7 @@ class Migration(migrations.Migration):
             fields=[
             ],
             options={
+                'db_table': 'contentitem_markup_textilemarkupitem',
                 'verbose_name': 'Textile',
                 'proxy': True,
                 'verbose_name_plural': 'Textile items',
